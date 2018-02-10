@@ -8942,83 +8942,40 @@ Object.defineProperty(exports, "__esModule", {
 
 var _templateObject = 0;
 
-exports.default = button;
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var html = {};
-
-function button(data, emit) {
-  return (function () {
-      var ac = require('/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js')
-      var bel0 = document.createElement("button")
-bel0.setAttribute("type", "button")
-bel0["onclick"] = arguments[0]
-ac(bel0, [arguments[1]])
-      return bel0
-    }(data.onclick,data.text));
-}
-
-},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83}],85:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _templateObject = 0;
-
 exports.default = card;
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 var html = {};
 
-function card(data, emit) {
+function card(item, emit) {
+  var name = (item.filename || item.url || '').split('/').pop();
+
   return (function () {
       var ac = require('/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js')
-      var bel0 = document.createElement("div")
+      var bel5 = document.createElement("div")
+var bel0 = document.createElement("button")
+bel0.setAttribute("type", "button")
 bel0["onclick"] = arguments[0]
-ac(bel0, ["\n      card #",arguments[1],"\n    "])
-      return bel0
-    }(handleClick,data.name));
+ac(bel0, ["-"])
+var bel1 = document.createElement("span")
+ac(bel1, ["[",arguments[1],"]"])
+var bel2 = document.createElement("strong")
+ac(bel2, [arguments[2]])
+var bel3 = document.createElement("br")
+var bel4 = document.createElement("a")
+bel4.setAttribute("href", arguments[3])
+ac(bel4, [arguments[4]])
+ac(bel5, ["\n      ",bel0,"\n      ",bel1,"\n      ",bel2,"\n      ",bel3,"\n      ",bel4,"\n    "])
+      return bel5
+    }(handleClick,item.state,name,item.url,item.url));
 
   function handleClick(e) {
-    emit('cdme:remove', data.id);
+    emit('cdme:remove', item.id);
   }
 }
 
-},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83}],86:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _templateObject = 0;
-
-exports.default = search;
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var html = {};
-
-function search(input, emit) {
-  return (function () {
-      var bel0 = document.createElement("input")
-bel0.setAttribute("type", "search")
-bel0.setAttribute("value", arguments[0])
-bel0.setAttribute("placeholder", "Search")
-bel0["onkeyup"] = arguments[1]
-      return bel0
-    }(input,handleKeyUp));
-
-  function handleKeyUp(e) {
-    emit('cdme:input', e.target.value);
-  }
-}
-
-},{}],87:[function(require,module,exports){
+},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83}],85:[function(require,module,exports){
 'use strict';
 
 var _chooDevtools = require('choo-devtools');
@@ -9031,6 +8988,10 @@ var _choo2 = _interopRequireDefault(_choo);
 
 var _glamor = require('glamor');
 
+var _store = require('store');
+
+var _store2 = _interopRequireDefault(_store);
+
 var _main = require('views/main');
 
 var _main2 = _interopRequireDefault(_main);
@@ -9041,19 +9002,48 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var app = (0, _choo2.default)();
 app.use((0, _chooDevtools2.default)());
-app.use(countStore);
+app.use(_store2.default);
 app.route('*', _main2.default);
 app.mount('#mount');
 
-function countStore(state, emitter) {
-  state.input = '';
-  state.downloads = [{ id: 1, name: 'a' }, { id: 2, name: 'b' }, { id: 3, name: 'c' }];
+},{"choo":12,"choo-devtools":4,"glamor":32,"store":86,"views/main":88}],86:[function(require,module,exports){
+'use strict';
 
-  emitter.on('cdme:add', function () {
-    state.downloads = state.downloads.concat([{
-      id: state.downloads[state.downloads.length - 1].id + 1,
-      name: Math.random().toString(36).replace(/[0-9]|\./g, '').substr(0, 1)
-    }]);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = store;
+function store(state, emitter) {
+  state.input = '';
+  state.items = [];
+  state.errors = [];
+
+  constructor();
+
+  function constructor() {
+    chrome.downloads.search({
+      orderBy: ['-startTime'],
+      limit: 0
+    }, function (items) {
+      return emitter.emit('cdme:bootstrap', items);
+    });
+
+    chrome.downloads.onCreated.addListener(function (item) {
+      return emitter.emit('cdme:add', item, { echo: false });
+    });
+    // /!\ don't emit for bytesReceived and estimatedEndTime change,
+    // need to do it manualy (maybe with a timeinterval searching for "in_progress" items)
+    console.warn('\'chrome.downloads.onChanged\' don\'t emit for \'bytesReceived\' and \'estimatedEndTime\' change, need to do it manualy (maybe with a \'timeinterval\' searching for \'item.state === "in_progress"\'');
+    chrome.downloads.onChanged.addListener(function (item) {
+      return emitter.emit('cdme:edit', item, { echo: false });
+    });
+    chrome.downloads.onErased.addListener(function (id) {
+      return emitter.emit('cdme:remove', id, { echo: false });
+    });
+  }
+
+  emitter.on('cdme:bootstrap', function (items) {
+    state.items = [].concat(items);
     emitter.emit('render');
   });
 
@@ -9062,15 +9052,64 @@ function countStore(state, emitter) {
     emitter.emit('render');
   });
 
+  emitter.on('cdme:add', function (item) {
+    state.items = [item].concat(state.items);
+    emitter.emit('render');
+  });
+
+  emitter.on('cdme:edit', function (diff) {
+    state.items = state.items.map(function (item) {
+      return item.id === diff.id ? Object.assign(item, diff) : item;
+    });
+    emitter.emit('render');
+  });
+
   emitter.on('cdme:remove', function (id) {
-    state.downloads = state.downloads.filter(function (data) {
-      return data.id !== id;
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (opts.echo !== false) {
+      var item = state.items.filter(function (item) {
+        return item.id === id;
+      });
+      var name = (item.filename || item.url).split('/').pop() || id;
+
+      chrome.downloads.erase({
+        id: id
+      }, function (results) {
+        return results.includes(id) ? null : emitter.emit('cdme:error', 'Unable to erase download ' + name);
+      });
+    }
+
+    state.items = state.items.filter(function (item) {
+      return item.id !== id;
+    });
+    emitter.emit('render');
+  });
+
+  emitter.on('cdme:clear', function () {
+    state.items = [];
+    // 'cdme:clear' doesn't call chrome.downloads API
+    console.warn("'cdme:clear' doesn't call chrome.downloads API !");
+    emitter.emit('render');
+  });
+
+  emitter.on('cdme:error', function (error) {
+    state.errors = [{
+      id: state.errors.length || 1,
+      msg: error
+    }].concat(state.errors);
+    emitter.emit('render');
+  });
+
+  emitter.on('cdme:solve', function (id) {
+    state.errors = state.errors.filter(function (error) {
+      return error.id !== id;
     });
     emitter.emit('render');
   });
 }
 
-},{"choo":12,"choo-devtools":4,"glamor":32,"views/main":89}],88:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9079,7 +9118,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _templateObject = 0;
 
-exports.default = mainView;
+exports.default = list;
 
 var _card = require('components/card');
 
@@ -9091,20 +9130,23 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
 var html = {};
 
-function mainView(state, emit) {
+function list(state, emit) {
+  var regex = new RegExp(state.input, 'gi');
+  var items = state.items.filter(function (item) {
+    return !state.input || item.url.match(regex) || item.filename.split('/').pop().match(regex);
+  });
+
   return (function () {
       var ac = require('/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js')
       var bel0 = document.createElement("div")
 ac(bel0, ["\n      ",arguments[0],"\n    "])
       return bel0
-    }(state.downloads.filter(function (data) {
-    return !state.input || data.name.includes(state.input);
-  }).map(function (data) {
-    return (0, _card2.default)(data, emit);
-  })));
+    }(items.length ? items.map(function (item) {
+    return (0, _card2.default)(item, emit);
+  }) : 'placeholder'));
 }
 
-},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83,"components/card":85}],89:[function(require,module,exports){
+},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83,"components/card":84}],88:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9113,7 +9155,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _templateObject = 0;
 
-exports.default = mainView;
+exports.default = main;
 
 var _toolbar = require('views/toolbar');
 
@@ -9129,7 +9171,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
 var html = {};
 
-function mainView(state, emit) {
+function main(state, emit) {
   return (function () {
       var ac = require('/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js')
       var bel0 = document.createElement("div")
@@ -9138,7 +9180,7 @@ ac(bel0, ["\n      ",arguments[0],"\n      ",arguments[1],"\n    "])
     }((0, _toolbar2.default)(state, emit),(0, _list2.default)(state, emit)));
 }
 
-},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83,"views/list":88,"views/toolbar":90}],90:[function(require,module,exports){
+},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83,"views/list":87,"views/toolbar":89}],89:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9147,31 +9189,44 @@ Object.defineProperty(exports, "__esModule", {
 
 var _templateObject = 0;
 
-exports.default = mainView;
-
-var _search = require('components/search');
-
-var _search2 = _interopRequireDefault(_search);
-
-var _button = require('components/button');
-
-var _button2 = _interopRequireDefault(_button);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+exports.default = toolbar;
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 var html = {};
 
-function mainView(state, emit) {
+function toolbar(state, emit) {
   return (function () {
       var ac = require('/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js')
-      var bel0 = document.createElement("div")
-ac(bel0, ["\n      ",arguments[0],"\n      ",arguments[1],"\n    "])
-      return bel0
-    }((0, _search2.default)(state.input, emit),(0, _button2.default)({ text: '+', onclick: function onclick() {
-      return emit('cdme:add');
-    } })));
+      var bel3 = document.createElement("div")
+var bel0 = document.createElement("button")
+bel0.setAttribute("type", "button")
+bel0["onclick"] = arguments[0]
+ac(bel0, ["*"])
+var bel1 = document.createElement("input")
+bel1.setAttribute("type", "search")
+bel1.setAttribute("value", arguments[1])
+bel1.setAttribute("placeholder", "Search")
+bel1["onkeyup"] = arguments[2]
+var bel2 = document.createElement("button")
+bel2.setAttribute("type", "button")
+bel2["onclick"] = arguments[3]
+ac(bel2, ["-"])
+ac(bel3, ["\n      ",bel0,"\n      ",bel1,"\n      ",bel2,"\n    "])
+      return bel3
+    }(full,state.input,search,clear));
+
+  function full() {
+    chrome.tabs.create({ url: "chrome://downloads/" });
+  }
+
+  function search(e) {
+    emit('cdme:input', e.target.value);
+  }
+
+  function clear() {
+    emit('cdme:clear');
+  }
 }
 
-},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83,"components/button":84,"components/search":86}]},{},[87]);
+},{"/Users/thcolin/Projects/chrome-download-manager-extension/node_modules/yo-yoify/lib/appendChild.js":83}]},{},[85]);
