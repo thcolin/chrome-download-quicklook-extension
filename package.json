@@ -1,19 +1,22 @@
 {
   "name": "chrome-download-manager-extension",
   "version": "1.0.0",
-  "description": "Just a simple af and beautiful (thanks Material Design) download manager for Chrome",
+  "description": "💾🗄️ Just a simple af and beautiful (thanks Material Design) download manager for Chrome",
   "main": "src/index.js",
   "scripts": {
-    "dev": "./node_modules/watchify/bin/cmd.js -g yo-yoify src/index.js -o dist/index.js",
+    "dev": "NODE_PATH=./src npx watchify src/index.js -o dist/index.js -t [ babelify --presets [ env ] ] -g yo-yoify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "thcolin",
   "license": "ISC",
   "dependencies": {
     "choo": "^6.7.0",
-    "material-design-lite": "^1.3.0"
+    "glamor": "^2.20.40"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babelify": "^8.0.0",
     "choo-devtools": "^2.3.3",
     "watchify": "^3.10.0",
     "yo-yoify": "^4.3.0"

@@ -1,32 +1,39 @@
-var html = require('choo/html')
-var devtools = require('choo-devtools')
-var choo = require('choo')
+import devtools from 'choo-devtools'
+import choo from 'choo'
+import { css } from 'glamor'
+import mainView from 'views/main'
 
 // `chrome` is a global variable, see [Chrome Platform APIs](https://developer.chrome.com/extensions/api_index)
 
 var app = choo()
 app.use(devtools())
 app.use(countStore)
-app.route('/index.html', mainView)
+app.route('*', mainView)
 app.mount('#mount')
 
-function mainView (state, emit) {
-  return html`
-    <div>
-      <h1>count is ${state.count}</h1>
-      <button onclick=${onclick}>Increment</button>
-    </div>
-  `
-
-  function onclick () {
-    emit('increment', 1)
-  }
-}
-
 function countStore (state, emitter) {
-  state.count = 0
-  emitter.on('increment', function (count) {
-    state.count += count
+  state.input = ''
+  state.downloads = [
+    { id: 1, name: 'a' },
+    { id: 2, name: 'b' },
+    { id: 3, name: 'c' }
+  ]
+
+  emitter.on('cdme:add', () => {
+    state.downloads = state.downloads.concat([{
+      id: state.downloads[state.downloads.length - 1].id + 1,
+      name: Math.random().toString(36).replace(/[0-9]|\./g, '').substr(0, 1)
+    }])
+    emitter.emit('render')
+  })
+
+  emitter.on('cdme:input', (value) => {
+    state.input = value
+    emitter.emit('render')
+  })
+
+  emitter.on('cdme:remove', (id) => {
+    state.downloads = state.downloads.filter(data => data.id !== id)
     emitter.emit('render')
   })
 }
