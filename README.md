@@ -2,7 +2,12 @@
 💾🗄️ Just a simple af and beautiful (thanks `Material Design`) download manager for `Chrome`
 
 ## Options
-* `hide-deleted` : Will hide download when file is deleted on filesystem
+* `hide-deleted` : Will hide download when item file is deleted on filesystem
+* `hide-only` : Doesn't delete download history, just hide item
+
+## Cool (but useless)
+* equalized `speed`
+* rounded `estimatedEndTime`
 
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)

@@ -6,7 +6,7 @@ import main from 'views/main'
 
 // `chrome` is a global variable, see [Chrome Platform APIs](https://developer.chrome.com/extensions/api_index)
 
-var app = choo()
+const app = choo()
 app.use(devtools())
 app.use(store)
 app.route('*', main)

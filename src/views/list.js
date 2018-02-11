@@ -3,11 +3,12 @@ const html = require('choo/html')
 
 export default function list(state, emit) {
   const regex = new RegExp(state.input, 'gi')
-  const items = state.items.filter(item => !state.input || item.url.match(regex) || item.filename.split('/').pop().match(regex))
+  const results = state.items.result
+    .filter(id => !state.input || state.items.entities[id].url.match(regex) || state.items.entities[id].filename.split('/').pop().match(regex))
 
   return html`
     <div>
-      ${items.length ? items.map(item => card(item, emit)) : 'placeholder'}
+      ${results.length ? results.map(id => card(id, state, emit)) : 'placeholder'}
     </div>
   `
 }

@@ -1,7 +1,15 @@
+export const REFRESH_INTERVAL = 1000 // ms
+
 export default function store (state, emitter) {
   state.input = ''
-  state.items = []
-  state.errors = []
+  state.items = {
+    entities: {},
+    result: []
+  }
+  state.errors = {
+    entities: {},
+    result: []
+  }
 
   constructor()
 
@@ -12,15 +20,21 @@ export default function store (state, emitter) {
     }, items => emitter.emit('cdme:bootstrap', items))
 
     chrome.downloads.onCreated.addListener(item => emitter.emit('cdme:add', item, { echo: false }))
-    // /!\ don't emit for bytesReceived and estimatedEndTime change,
-    // need to do it manualy (maybe with a timeinterval searching for "in_progress" items)
-    console.warn(`'chrome.downloads.onChanged' don't emit for 'bytesReceived' and 'estimatedEndTime' change, need to do it manualy (maybe with a 'timeinterval' searching for 'item.state === "in_progress"'`)
-    chrome.downloads.onChanged.addListener(item => emitter.emit('cdme:edit', item, { echo: false }))
+    chrome.downloads.onChanged.addListener(delta => emitter.emit('cdme:alter', delta, { echo: false }))
     chrome.downloads.onErased.addListener(id => emitter.emit('cdme:remove', id, { echo: false }))
+
+    // `chrome.downloads.onChanged` don't emit event for bytesReceived and estimatedEndTime change
+    setInterval(() => {
+      chrome.downloads.search({
+        state: 'in_progress',
+        limit: 0
+      }, items => items.length ? emitter.emit('cdme:refresh', items) : null)
+    }, REFRESH_INTERVAL)
   }
 
   emitter.on('cdme:bootstrap', items => {
-    state.items = [].concat(items)
+    state.items.entities = items.map(embellish).reduce((obj, item) => Object.assign(obj, { [item.id]: item }), {})
+    state.items.result = [].concat(items.map(items => items.id))
     emitter.emit('render')
   })
 
@@ -30,46 +44,90 @@ export default function store (state, emitter) {
   })
 
   emitter.on('cdme:add', item => {
-    state.items = [item].concat(state.items)
+    state.items.entities[item.id] = embellish(item)
+    state.items.result = [item.id].concat(state.items.result)
     emitter.emit('render')
   })
 
-  emitter.on('cdme:edit', diff => {
-    state.items = state.items.map(item => item.id === diff.id ? Object.assign(item, diff) : item)
+  emitter.on('cdme:refresh', items => {
+    emitter.emit('cdme:alter', items
+      .filter(item => state.items.result.includes(item.id))
+      .map(item => Object.keys(item)
+        .filter(key => item[key] !== state.items.entities[item.id][key])
+        .reduce((obj, key) => Object.assign(obj, {
+          [key]: {
+            previous: state.items.entities[item.id][key],
+            current: item[key]
+          }
+        }), { id: item.id })
+      ))
+  })
+
+  emitter.on('cdme:alter', deltas => {
+    (Array.isArray(deltas) ? deltas : [deltas])
+      .filter(delta => state.items.result.includes(delta.id))
+      .map(carve)
+      .forEach(chunk => {
+        const item = state.items.entities[chunk.id]
+        const estimatedEndTime = !chunk.estimatedEndTime ? {} : { estimatedRemainingTime: new Date(chunk.estimatedEndTime) - new Date() }
+        const current = ((chunk.bytesReceived || item.bytesReceived) - item.bytesReceived) * (1000 / REFRESH_INTERVAL)
+        const speed = !current ? {} : {
+          speed: item.records.concat(current).slice(1).slice(-10).reduce((total, value) => total + value, 0) / Math.min(item.records.length, 10),
+          records: item.records.concat(current)
+        }
+
+        state.items.entities[chunk.id] = Object.assign(item, chunk, estimatedEndTime, speed)
+      })
+
     emitter.emit('render')
   })
 
   emitter.on('cdme:remove', (id, opts = {}) => {
     if (opts.echo !== false) {
-      const item = state.items.filter(item => item.id === id)
-      const name = (item.filename || item.url).split('/').pop() || id
+      const name = (state.items.entities[id].filename || state.items.entities[id].url || id).split('/').pop()
 
       chrome.downloads.erase({
         id: id
       }, results => results.includes(id) ? null : emitter.emit('cdme:error', `Unable to erase download ${name}`))
     }
 
-    state.items = state.items.filter(item => item.id !== id)
+    state.items.result = state.items.result.filter(value => value !== id)
+    delete state.items.entities[id]
     emitter.emit('render')
   })
 
   emitter.on('cdme:clear', () => {
-    state.items = []
+    state.items.entities = {}
+    state.items.result = []
     // 'cdme:clear' doesn't call chrome.downloads API
     console.warn("'cdme:clear' doesn't call chrome.downloads API !")
     emitter.emit('render')
   })
 
   emitter.on('cdme:error', error => {
-    state.errors = [{
-      id: state.errors.length || 1,
+    const id = state.errors.length || 1
+    state.errors.entities[id] = {
+      id: id,
       msg: error
-    }].concat(state.errors)
+    }
+    state.errors.result = [id].concat(state.errors.result)
     emitter.emit('render')
   })
 
   emitter.on('cdme:solve', id => {
-    state.errors = state.errors.filter(error => error.id !== id)
+    state.errors.result = state.errors.result.filter(value => value !== id)
+    delete state.errors.entities[id]
     emitter.emit('render')
   })
+}
+
+function embellish (item) {
+  return Object.assign(item, {
+    records: item.records ? item.records : []
+  })
+}
+
+function carve (delta) {
+  return Object.keys(delta)
+    .reduce((obj, key) => Object.assign(obj, { [key]: delta[key].current || delta[key] }), {})
 }
