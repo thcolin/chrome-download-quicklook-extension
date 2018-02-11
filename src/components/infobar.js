@@ -2,9 +2,17 @@ const html = require('bel')
 
 export default function infobar(item) {
   return html`
-    <span>
-      ${bhumanize(item.speed, '/s')} - ${bhumanize(item.bytesReceived)} on ${bhumanize(item.totalBytes)}, ${dhumanize(item.estimatedRemainingTime)}
-    </span>
+    <div>
+      <p>
+        <span>${item.canResume ? null : bhumanize(item.speed, '/s') + ' - '}</span>
+        <span>${bhumanize(item.bytesReceived)}</span>
+        <span> on </span>
+        <span>${bhumanize(item.totalBytes)}</span>
+        <span>, </span>
+        <span>${item.canResume ? 'Suspended' : dhumanize(item.estimatedRemainingTime)}</span>
+      </p>
+      <progress value=${item.bytesReceived} max=${item.totalBytes}>0%</progress>
+    </div>
   `
 
   function dhumanize (milliseconds) {

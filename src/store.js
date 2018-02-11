@@ -1,5 +1,3 @@
-export const REFRESH_INTERVAL = 1000 // ms
-
 export default function store (state, emitter) {
   state.input = ''
   state.items = {
@@ -27,9 +25,10 @@ export default function store (state, emitter) {
     setInterval(() => {
       chrome.downloads.search({
         state: 'in_progress',
+        paused: false,
         limit: 0
       }, items => items.length ? emitter.emit('cdme:refresh', items) : null)
-    }, REFRESH_INTERVAL)
+    }, 1000)
   }
 
   emitter.on('cdme:bootstrap', items => {
@@ -70,7 +69,7 @@ export default function store (state, emitter) {
       .forEach(chunk => {
         const item = state.items.entities[chunk.id]
         const estimatedEndTime = !chunk.estimatedEndTime ? {} : { estimatedRemainingTime: new Date(chunk.estimatedEndTime) - new Date() }
-        const current = ((chunk.bytesReceived || item.bytesReceived) - item.bytesReceived) * (1000 / REFRESH_INTERVAL)
+        const current = (chunk.bytesReceived || item.bytesReceived) - item.bytesReceived
         const speed = !current ? {} : {
           speed: item.records.concat(current).slice(1).slice(-10).reduce((total, value) => total + value, 0) / Math.min(item.records.length, 10),
           records: item.records.concat(current)
@@ -82,13 +81,22 @@ export default function store (state, emitter) {
     emitter.emit('render')
   })
 
+  emitter.on('cdme:pause', id => {
+    chrome.downloads.pause(id)
+  })
+
+  emitter.on('cdme:resume', id => {
+    chrome.downloads.resume(id)
+  })
+
+  emitter.on('cdme:stop', id => {
+    chrome.downloads.cancel(id)
+  })
+
   emitter.on('cdme:remove', (id, opts = {}) => {
     if (opts.echo !== false) {
       const name = (state.items.entities[id].filename || state.items.entities[id].url || id).split('/').pop()
-
-      chrome.downloads.erase({
-        id: id
-      }, results => results.includes(id) ? null : emitter.emit('cdme:error', `Unable to erase download ${name}`))
+      chrome.downloads.erase({ id: id }, results => results.includes(id) ? null : emitter.emit('cdme:error', `Unable to erase download ${name}`))
     }
 
     state.items.result = state.items.result.filter(value => value !== id)
@@ -97,10 +105,17 @@ export default function store (state, emitter) {
   })
 
   emitter.on('cdme:clear', () => {
-    state.items.entities = {}
-    state.items.result = []
-    // 'cdme:clear' doesn't call chrome.downloads API
-    console.warn("'cdme:clear' doesn't call chrome.downloads API !")
+    chrome.downloads.erase({ query: [''] }, results => {
+      state.items.result = state.items.result.filter(id => {
+        if (results.includes(id)) {
+          delete state.items.entities[id]
+          return false
+        } else {
+          emitter.emit('cdme:error', `Unable to erase download ${id}`)
+          return true
+        }
+      })
+    })
     emitter.emit('render')
   })
 
@@ -129,5 +144,5 @@ function embellish (item) {
 
 function carve (delta) {
   return Object.keys(delta)
-    .reduce((obj, key) => Object.assign(obj, { [key]: delta[key].current || delta[key] }), {})
+    .reduce((obj, key) => Object.assign(obj, { [key]: typeof delta[key] === 'object' ? delta[key].current : delta[key] }), {})
 }
