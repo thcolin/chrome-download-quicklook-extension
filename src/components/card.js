@@ -131,11 +131,11 @@ export default function card (id, state, emit) {
       <div className=${[styles.details, styles.textOverflow].join(' ')}>
         <div className=${styles.title}>
           <div className=${styles.textOverflow}>
-            <h3 className=${[styles.name, item.state === 'in_progress' && !item.paused && styles.active].join(' ')}>${name}</h3>
+            <h3 title=${name} className=${[styles.name, item.state === 'in_progress' && !item.paused && styles.active].join(' ')}>${name}</h3>
           </div>
           <span className=${styles.state}>${item.state}</span>
         </div>
-        <a href=${item.url} className=${styles.link} target="_blank" download>${item.url}</a>
+        <a href=${item.url} title=${item.url} className=${styles.link} target="_blank" download>${item.url}</a>
         <div class=${styles.progress}>
           ${item.state === 'in_progress' && !item.paused ? details.speed : null}
           ${item.state === 'in_progress' && !item.paused ? ' - ' : null}
@@ -152,7 +152,7 @@ export default function card (id, state, emit) {
           ${item.state === 'complete' && item.exists ? actions.open : null}
         </div>
       </div>
-      <button type="button" className=${styles.remove} onclick=${remove}>
+      <button type="button" title="Remove" className=${styles.remove} onclick=${remove}>
         <i className=${['material-icons', styles.icon].join(' ')}>clear</i>
       </button>
     </div>
