@@ -1,13 +1,7 @@
 export default function store (state, emitter) {
   state.input = ''
-  state.items = {
-    entities: {},
-    result: []
-  }
-  state.errors = {
-    entities: {},
-    result: []
-  }
+  state.items = { entities: {}, result: [] }
+  state.errors = { entities: {}, result: [] }
 
   constructor()
 
@@ -81,6 +75,10 @@ export default function store (state, emitter) {
     emitter.emit('render')
   })
 
+  emitter.on('cdme:stop', id => {
+    chrome.downloads.cancel(id)
+  })
+
   emitter.on('cdme:pause', id => {
     chrome.downloads.pause(id)
   })
@@ -89,8 +87,12 @@ export default function store (state, emitter) {
     chrome.downloads.resume(id)
   })
 
-  emitter.on('cdme:stop', id => {
-    chrome.downloads.cancel(id)
+  emitter.on('cdme:show', id => {
+    chrome.downloads.show(id)
+  })
+
+  emitter.on('cdme:open', id => {
+    chrome.downloads.open(id)
   })
 
   emitter.on('cdme:remove', (id, opts = {}) => {

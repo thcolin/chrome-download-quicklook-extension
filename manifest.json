@@ -11,6 +11,7 @@
     "default_title": "Quicklook to downloads"
   },
   "permissions": [
-    "downloads"
+    "downloads",
+    "downloads.open"
   ]
 }
