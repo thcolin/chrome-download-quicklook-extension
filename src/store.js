@@ -1,7 +1,6 @@
 export default function store (state, emitter) {
   state.input = ''
   state.items = { entities: {}, result: [] }
-  state.errors = { entities: {}, result: [] }
 
   constructor()
 
@@ -97,8 +96,8 @@ export default function store (state, emitter) {
 
   emitter.on('cdme:remove', (id, opts = {}) => {
     if (opts.echo !== false) {
-      const name = (state.items.entities[id].filename || state.items.entities[id].url || id).split('/').pop()
-      chrome.downloads.erase({ id: id }, results => results.includes(id) ? null : emitter.emit('cdme:error', `Unable to erase download ${name}`))
+      const name = (state.items.entities[id].filename || state.items.entities[id].url || '#' + id).split('/').pop()
+      chrome.downloads.erase({ id: id }, results => results.includes(id) ? null : console.warn('cdme:error', `Unable to erase download ${name}`))
     }
 
     state.items.result = state.items.result.filter(value => value !== id)
@@ -113,27 +112,11 @@ export default function store (state, emitter) {
           delete state.items.entities[id]
           return false
         } else {
-          emitter.emit('cdme:error', `Unable to erase download ${id}`)
+          console.warn('cdme:error', `Unable to erase download #${id}`)
           return true
         }
       })
     })
-    emitter.emit('render')
-  })
-
-  emitter.on('cdme:error', error => {
-    const id = state.errors.length || 1
-    state.errors.entities[id] = {
-      id: id,
-      msg: error
-    }
-    state.errors.result = [id].concat(state.errors.result)
-    emitter.emit('render')
-  })
-
-  emitter.on('cdme:solve', id => {
-    state.errors.result = state.errors.result.filter(value => value !== id)
-    delete state.errors.entities[id]
     emitter.emit('render')
   })
 }

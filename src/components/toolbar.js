@@ -16,8 +16,9 @@ export default function toolbar(state, emit) {
       background: 'rgba(0, 0, 0, 0.22)',
       border: 'none',
       borderRadius: '2px',
+      fontSize: '14px',
       color: 'white',
-      padding: '7px 30px',
+      padding: '7px 35px',
       outline: 'none',
       '::placeholder': {
         color: 'rgba(255, 255, 255, 0.7)'
@@ -29,12 +30,12 @@ export default function toolbar(state, emit) {
       fontSize: '18px'
     }),
     loupe: css({
-      padding: '5px 0 5px 7px'
+      padding: '7px 0 6px 10px'
     }),
     cancel: css({
       right: 0,
       cursor: 'pointer',
-      padding: '7px 7px 7px 0',
+      padding: '9px 7px 8px',
       fontSize: '14px'
     }),
     button: css({
@@ -51,13 +52,17 @@ export default function toolbar(state, emit) {
 
   return html`
     <div className=${styles.toolbar}>
-      <button type="button" title="Open Downloads" className=${styles.button} onclick=${full}><i class="material-icons">subject</i></button>
+      <button type="button" title="Open Downloads" className=${styles.button} onclick=${full}>
+        <i class="material-icons">subject</i>
+      </button>
       <div className=${styles.search}>
         <i className=${[styles.icon, styles.loupe, 'material-icons'].join(' ')}>search</i>
         <i className=${[styles.icon, styles.cancel, !state.input.length && styles.none, 'material-icons'].join(' ')} onclick=${cancel}>cancel</i>
         <input type="text" className=${styles.input} value=${state.input} placeholder="Search downloads" oninput=${search}>
       </div>
-      <button type="button" title="Clear All" className=${styles.button} onclick=${clear}><i class="material-icons">delete</i></button>
+      <button type="button" title="Clear All" className=${styles.button} onclick=${clear}>
+        <i class="material-icons">delete</i>
+      </button>
     </div>
   `
 

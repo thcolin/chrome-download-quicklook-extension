@@ -9,6 +9,12 @@
 * equalized `speed`
 * rounded `estimatedEndTime`
 
+## Next ?
+* [ ] implement `placeholder` component (use `Chome` one)
+* [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
+* [ ] dynamic `manifest.json:default_icon` (use a `svg` ?)
+* [ ] implement `delete` action on `card` ?
+
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)
 

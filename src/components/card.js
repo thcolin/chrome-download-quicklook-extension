@@ -5,62 +5,156 @@ export default function card (id, state, emit) {
   const item = state.items.entities[id]
   const name = String(item.filename || item.url || id).split('/').pop()
 
+  const styles = {
+    card: css({
+      position: 'relative',
+      display: 'flex',
+      background: 'white',
+      margin: '10px',
+      boxShadow: '0px 1px 3px hsl(0, 0%, 80%)'
+    }),
+    interrupted: css({
+      opacity: 0.7
+    }),
+    textOverflow: css({
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden'
+    }),
+    quicklook: css({
+      display: 'flex',
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      padding: '20px',
+      borderRight: '1px solid hsl(0, 0%, 90%)'
+    }),
+    details: css({
+      flex: 1,
+      padding: '15px 5px 15px 15px'
+    }),
+    title: css({
+      display: 'flex',
+      alignItems: 'center',
+      margin: '0 0 3px'
+    }),
+    name: css({
+      display: 'inline',
+      fontWeight: '600',
+      color: 'hsl(0, 0%, 40%)'
+    }),
+    active: css({
+      color: '#3367d6'
+    }),
+    state: css({
+      fontSize: 'smaller',
+      color: 'hsl(0, 0%, 40%)',
+      textTransform: 'capitalize',
+      margin: '0 0 0 5px'
+    }),
+    link: css({
+      textDecoration: 'none',
+      fontSize: 'smaller',
+      color: 'hsl(0, 0%, 50%)',
+      ':hover': {
+        color: 'hsl(0, 0%, 40%)'
+      }
+    }),
+    progress: css({
+      margin: '5px 0 5px',
+      fontSize: 'smaller',
+      color: 'hsl(0, 0%, 20%)'
+    }),
+    meter: css({
+      position: 'relative',
+      background: 'hsl(0, 0%, 90%)',
+      height: '3px',
+      width: '100%',
+      margin: '7px 0'
+    }),
+    bar: css({
+      display: 'block',
+      height: '100%',
+      width: `${(item.bytesReceived / item.totalBytes) * 100}%`,
+      background: '#367eed',
+      transition: 'width 1.5s linear'
+    }),
+    remove: css({
+      alignSelf: 'flex-start',
+      background: 'transparent',
+      padding: '10px',
+      border: 'none',
+      outline: 'none',
+      cursor: 'pointer'
+    }),
+    icon: css({
+      color: 'hsl(0, 0%, 40%)',
+      fontSize: '18px',
+      ':hover': {
+        color: 'hsl(0, 0%, 30%)'
+      }
+    }),
+    action: css({
+      background: 'transparent',
+      cursor: 'pointer',
+      border: 'none',
+      outline: 'none',
+      color: 'hsl(0, 0%, 40%)',
+      fontSize: '11px',
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      textDecoration: 'none',
+      margin: '0 10px 0 0'
+    })
+  }
+
   const details = {
     speed: html`<span>${bhumanize(item.speed, '/s')}</span>`,
     progress: html`<span>${bhumanize(item.bytesReceived)} on ${bhumanize(item.totalBytes)}</span>`,
     remaining: html`<span>${item.paused ? 'Paused' : dhumanize(item.estimatedRemainingTime)}</span>`,
-    bar: html`<progress value=${item.bytesReceived} max=${item.totalBytes}>0%</progress>`
+    bar: html`<div className=${styles.meter}><span className=${styles.bar}></span></div>`
   }
 
   const actions = {
-    stop: html`<button type="button" onclick=${stop}>stop</button>`,
-    retry: html`<a href=${item.url} target="_blank" download>retry</a>`,
-    pause: html`<button type="button" onclick=${pause}>pause</button>`,
-    resume: html`<button type="button" onclick=${resume}>resume</button>`,
-    show: html`<button type="button" onclick=${show}>show</button>`,
-    open: html`<button type="button" onclick=${open}>open</button>`
-  }
-
-  const styles = {
-    card: css({
-      position: 'relative',
-      background: 'white',
-      margin: '10px'
-    }),
-    remove: css({
-      position: 'absolute',
-      top: '5px',
-      right: '5px',
-      background: 'transparent',
-      border: 'none',
-      color: 'black',
-      outline: 'none',
-      cursor: 'pointer',
-      fontSize: '12px'
-    })
+    stop: html`<button type="button" className=${styles.action} onclick=${stop}>stop</button>`,
+    retry: html`<a href=${item.url} className=${styles.action} target="_blank" download>retry</a>`,
+    pause: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${pause}>pause</button>`,
+    resume: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${resume}>resume</button>`,
+    show: html`<button type="button" className=${styles.action} onclick=${show}>show</button>`,
+    open: html`<button type="button" className=${styles.action} onclick=${open}>open</button>`
   }
 
   return html`
-    <div className=${styles.card} id=${id}>
-      <button type="button" className=${styles.remove} onclick=${remove}><i class="material-icons">clear</i></button>
-      <h4>${name}</h4>
-      <span>[${item.state}]</span>
-      <a href=${item.url} target="_blank" download>${item.url}</a>
-      <div class="details">
-        ${item.state === 'in_progress' && !item.paused ? details.speed : null}
-        ${item.state === 'in_progress' && !item.paused ? ' - ' : null}
-        ${item.state === 'in_progress' ? details.progress : null}
-        ${item.state === 'in_progress' && !item.paused ? ', ' : null}
-        ${item.state === 'in_progress' && !item.paused ? details.remaining : null}
-        ${item.state === 'in_progress' ? details.bar : null}
+    <div className=${[styles.card, item.state === 'interrupted' && styles.interrupted].join(' ')} id=${id}>
+      <div className=${styles.quicklook}>
+        <i className=${['material-icons', styles.ntm].join(' ')}>insert_drive_file</i>
       </div>
-      <div class="actions">
-        ${item.state === 'in_progress' ? (item.paused ? actions.resume : actions.pause) : null}
-        ${item.state === 'in_progress' ? actions.stop : null}
-        ${item.state === 'interrupted' || (item.state === 'complete' && !item.exists) ? actions.retry : null}
-        ${item.state === 'complete' && item.exists ? actions.show : null}
-        ${item.state === 'complete' && item.exists ? actions.open : null}
+      <div className=${[styles.details, styles.textOverflow].join(' ')}>
+        <div className=${styles.title}>
+          <div className=${styles.textOverflow}>
+            <h3 className=${[styles.name, item.state === 'in_progress' && !item.paused && styles.active].join(' ')}>${name}</h3>
+          </div>
+          <span className=${styles.state}>${item.state}</span>
+        </div>
+        <a href=${item.url} className=${styles.link} target="_blank" download>${item.url}</a>
+        <div class=${styles.progress}>
+          ${item.state === 'in_progress' && !item.paused ? details.speed : null}
+          ${item.state === 'in_progress' && !item.paused ? ' - ' : null}
+          ${item.state === 'in_progress' ? details.progress : null}
+          ${item.state === 'in_progress' && !item.paused ? ', ' : null}
+          ${item.state === 'in_progress' && !item.paused ? details.remaining : null}
+          ${item.state === 'in_progress' ? details.bar : null}
+        </div>
+        <div class="actions">
+          ${item.state === 'in_progress' ? (item.paused ? actions.resume : actions.pause) : null}
+          ${item.state === 'in_progress' ? actions.stop : null}
+          ${item.state === 'interrupted' || (item.state === 'complete' && !item.exists) ? actions.retry : null}
+          ${item.state === 'complete' && item.exists ? actions.show : null}
+          ${item.state === 'complete' && item.exists ? actions.open : null}
+        </div>
       </div>
+      <button type="button" className=${styles.remove} onclick=${remove}>
+        <i className=${['material-icons', styles.icon].join(' ')}>clear</i>
+      </button>
     </div>
   `
 
