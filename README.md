@@ -12,11 +12,11 @@
 ## Next ?
 * [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ?
-* [x] dynamic `manifest.json:default_icon` (use a `svg` ?)
 * [ ] implement `delete` action on `card` ?
 * [ ] disable `Chrome` download bar
 * [ ] move some process in `background.js`
-* [ ] handle `material-icons` with `npm`
+* [x] handle `material-icons` with `npm`
+* [ ] improve `npm run build` and fix `npm run dev`
 * [ ] rebrand with `Quicklook` in mind
 
 ## Thanks
