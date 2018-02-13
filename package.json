@@ -1,7 +1,7 @@
 {
   "name": "chrome-download-manager-extension",
   "version": "1.0.0",
-  "description": "💾🗄️ Just a simple af and beautiful (thanks Material Design) download manager for Chrome",
+  "description": "💾🔭 A beautiful Chrome extension to have a quicklook on your downloads !",
   "main": "src/index.js",
   "scripts": {
     "dev": "NODE_PATH=src npx watchify src/index.js -o dist/index.js -t [ babelify --presets [ env ] ] -g yo-yoify",

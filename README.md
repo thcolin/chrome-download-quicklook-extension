@@ -1,5 +1,5 @@
 # Chrome Download Manager Extension
-💾🗄️ Just a simple af and beautiful (thanks `Material Design`) download manager for `Chrome`
+💾🔭 A beautiful `Chrome` extension to have a quicklook on your downloads !
 
 ## Options
 * `hide-deleted` : Will hide download when item file is deleted on filesystem
@@ -14,7 +14,7 @@
   * try `callbag` ?
 * [ ] implement `delete` action on `card` ?
 * [ ] improve `npm run build` (copy `background.js` to `dist`) and fix `npm run dev` (mimic `npm run build`)
-* [ ] rebrand with `Quicklook` in mind
+* [x] rebrand with `Quicklook` in mind
 
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)

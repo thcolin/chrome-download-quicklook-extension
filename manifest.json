@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Download Manager",
-  "description": "A simple af and beautiful (thanks Material Design) download manager for Chrome",
+  "description": "💾🔭 A beautiful extension to have a quicklook on your downloads !",
   "version": "1.0",
 
   "browser_action": {
