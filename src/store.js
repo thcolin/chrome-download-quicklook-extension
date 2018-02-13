@@ -1,6 +1,12 @@
+import icon from 'components/icon'
+
 export default function store (state, emitter) {
   state.input = ''
-  state.items = { entities: {}, result: [] }
+  state.progress = null
+  state.items = {
+    entities: {},
+    result: []
+  }
 
   constructor()
 
@@ -23,6 +29,38 @@ export default function store (state, emitter) {
       }, items => items.length ? emitter.emit('cdme:refresh', items) : null)
     }, 1000)
   }
+
+  emitter.on('render', () => {
+    emitter.emit('cdme:draw')
+  })
+
+  emitter.on('cdme:draw', () => {
+    let progress = state.items.result
+      .map(key => state.items.entities[key])
+      .filter(item => item.state === 'in_progress')
+      .map(item => (item.bytesReceived / item.totalBytes) * 100)
+      .reduce((total, current, index, array) => index === (array.length - 1) ? Math.ceil((total + current) / array.length) : total + current, 0)
+
+    if (progress === state.progress) {
+      return
+    } else {
+      state.progress = progress
+    }
+
+    let size = 128
+    let svg = new XMLSerializer().serializeToString(icon(progress, size))
+    let img = document.createElement('img')
+    let canvas = document.createElement('canvas')
+    let context = canvas.getContext('2d')
+
+    img.setAttribute('src','data:image/svg+xml;base64,' + btoa(svg))
+    img.onload = () => {
+      context.drawImage(img, 0, 0)
+      chrome.browserAction.setIcon({
+        imageData: context.getImageData(0, 0, size, size)
+      })
+    }
+  })
 
   emitter.on('cdme:bootstrap', items => {
     state.items.entities = items.map(embellish).reduce((obj, item) => Object.assign(obj, { [item.id]: item }), {})

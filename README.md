@@ -10,11 +10,14 @@
 * rounded `estimatedEndTime`
 
 ## Next ?
-* [x] implement `placeholder` component (use `Chome` one)
 * [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ?
-* [ ] dynamic `manifest.json:default_icon` (use a `svg` ?)
+* [x] dynamic `manifest.json:default_icon` (use a `svg` ?)
 * [ ] implement `delete` action on `card` ?
+* [ ] disable `Chrome` download bar
+* [ ] move some process in `background.js`
+* [ ] handle `material-icons` with `npm`
+* [ ] rebrand with `Quicklook` in mind
 
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)
