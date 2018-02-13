@@ -9,18 +9,22 @@ export default function list(state, emit) {
     .filter(id => !state.input || state.items.entities[id].url.match(regex) || state.items.entities[id].filename.split('/').pop().match(regex))
   const styles = {
     list: css({
-      display: 'flex',
-      flexDirection: 'column',
       width: '400px',
       minHeight: '300px',
       maxHeight: '500px',
       overflowY: 'scroll'
+    }),
+    container: css({
+      display: 'flex',
+      flexDirection: 'column'
     })
   }
 
   return html`
     <div className=${styles.list}>
-      ${results.length ? results.map(id => card(id, state, emit)) : placeholder(state.input ? 'No search results found' : 'Nothing to see here...')}
+      <div className=${styles.container}>
+        ${results.length ? results.map(id => card(id, state, emit)) : placeholder(state.input ? 'No search results found' : 'Nothing to see here...')}
+      </div>
     </div>
   `
 }
