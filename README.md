@@ -10,7 +10,7 @@
 * rounded `estimatedEndTime`
 
 ## Next ?
-* [ ] implement `placeholder` component (use `Chome` one)
+* [x] implement `placeholder` component (use `Chome` one)
 * [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ?
 * [ ] dynamic `manifest.json:default_icon` (use a `svg` ?)

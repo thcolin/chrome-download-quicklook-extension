@@ -1,5 +1,5 @@
 import { css } from 'glamor'
-const html = require('bel')
+const html = require('choo/html')
 
 export default function card (id, state, emit) {
   const item = state.items.entities[id]
