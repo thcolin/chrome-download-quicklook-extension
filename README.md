@@ -13,10 +13,9 @@
 * [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ?
 * [ ] implement `delete` action on `card` ?
-* [ ] disable `Chrome` download bar
-* [ ] move some process in `background.js`
-* [x] handle `material-icons` with `npm`
-* [ ] improve `npm run build` and fix `npm run dev`
+* [x] disable `Chrome` download bar
+* [x] move some process in `background.js`
+* [ ] improve `npm run build` (copy `background.js` to `dist`) and fix `npm run dev` (mimic `npm run build`)
 * [ ] rebrand with `Quicklook` in mind
 
 ## Thanks

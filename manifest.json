@@ -10,8 +10,13 @@
     "default_popup": "index.html",
     "default_title": "Quicklook to downloads"
   },
+  "background": {
+    "scripts": ["dist/background.js"],
+    "persistent": false
+  },
   "permissions": [
     "downloads",
-    "downloads.open"
+    "downloads.open",
+    "downloads.shelf"
   ]
 }
