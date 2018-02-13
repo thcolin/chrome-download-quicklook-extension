@@ -71,14 +71,14 @@ export default function toolbar(state, emit) {
   }
 
   function search (e) {
-    emit('cdme:input', e.target.value)
+    emit('cdqe:input', e.target.value)
   }
 
   function cancel () {
-    emit('cdme:input', '')
+    emit('cdqe:input', '')
   }
 
   function clear () {
-    emit('cdme:clear')
+    emit('cdqe:clear')
   }
 }

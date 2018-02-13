@@ -11,11 +11,11 @@ export default function store (state, emitter) {
     chrome.downloads.search({
       orderBy: ['-startTime'],
       limit: 0
-    }, items => emitter.emit('cdme:bootstrap', items))
+    }, items => emitter.emit('cdqe:bootstrap', items))
 
-    chrome.downloads.onCreated.addListener(item => emitter.emit('cdme:add', item, { echo: false }))
-    chrome.downloads.onChanged.addListener(delta => emitter.emit('cdme:alter', delta, { echo: false }))
-    chrome.downloads.onErased.addListener(id => emitter.emit('cdme:remove', id, { echo: false }))
+    chrome.downloads.onCreated.addListener(item => emitter.emit('cdqe:add', item, { echo: false }))
+    chrome.downloads.onChanged.addListener(delta => emitter.emit('cdqe:alter', delta, { echo: false }))
+    chrome.downloads.onErased.addListener(id => emitter.emit('cdqe:remove', id, { echo: false }))
 
     // `chrome.downloads.onChanged` don't emit event for bytesReceived and estimatedEndTime change
     setInterval(() => {
@@ -23,29 +23,29 @@ export default function store (state, emitter) {
         state: 'in_progress',
         paused: false,
         limit: 0
-      }, items => items.length ? emitter.emit('cdme:refresh', items) : null)
+      }, items => items.length ? emitter.emit('cdqe:refresh', items) : null)
     }, 1000)
   }
 
-  emitter.on('cdme:bootstrap', items => {
+  emitter.on('cdqe:bootstrap', items => {
     state.items.entities = items.map(embellish).reduce((obj, item) => Object.assign(obj, { [item.id]: item }), {})
     state.items.result = [].concat(items.map(items => items.id))
     emitter.emit('render')
   })
 
-  emitter.on('cdme:input', value => {
+  emitter.on('cdqe:input', value => {
     state.input = value
     emitter.emit('render')
   })
 
-  emitter.on('cdme:add', item => {
+  emitter.on('cdqe:add', item => {
     state.items.entities[item.id] = embellish(item)
     state.items.result = [item.id].concat(state.items.result)
     emitter.emit('render')
   })
 
-  emitter.on('cdme:refresh', items => {
-    emitter.emit('cdme:alter', items
+  emitter.on('cdqe:refresh', items => {
+    emitter.emit('cdqe:alter', items
       .filter(item => state.items.result.includes(item.id))
       .map(item => Object.keys(item)
         .filter(key => item[key] !== state.items.entities[item.id][key])
@@ -58,7 +58,7 @@ export default function store (state, emitter) {
       ))
   })
 
-  emitter.on('cdme:alter', deltas => {
+  emitter.on('cdqe:alter', deltas => {
     (Array.isArray(deltas) ? deltas : [deltas])
       .filter(delta => state.items.result.includes(delta.id))
       .map(carve)
@@ -77,30 +77,30 @@ export default function store (state, emitter) {
     emitter.emit('render')
   })
 
-  emitter.on('cdme:stop', id => {
+  emitter.on('cdqe:stop', id => {
     chrome.downloads.cancel(id)
   })
 
-  emitter.on('cdme:pause', id => {
+  emitter.on('cdqe:pause', id => {
     chrome.downloads.pause(id)
   })
 
-  emitter.on('cdme:resume', id => {
+  emitter.on('cdqe:resume', id => {
     chrome.downloads.resume(id)
   })
 
-  emitter.on('cdme:show', id => {
+  emitter.on('cdqe:show', id => {
     chrome.downloads.show(id)
   })
 
-  emitter.on('cdme:open', id => {
+  emitter.on('cdqe:open', id => {
     chrome.downloads.open(id)
   })
 
-  emitter.on('cdme:remove', (id, opts = {}) => {
+  emitter.on('cdqe:remove', (id, opts = {}) => {
     if (opts.echo !== false) {
       const name = (state.items.entities[id].filename || state.items.entities[id].url || '#' + id).split('/').pop()
-      chrome.downloads.erase({ id: id }, results => results.includes(id) ? null : console.warn('cdme:error', `Unable to erase download ${name}`))
+      chrome.downloads.erase({ id: id }, results => results.includes(id) ? null : console.warn('cdqe:error', `Unable to erase download ${name}`))
     }
 
     state.items.result = state.items.result.filter(value => value !== id)
@@ -108,14 +108,14 @@ export default function store (state, emitter) {
     emitter.emit('render')
   })
 
-  emitter.on('cdme:clear', () => {
+  emitter.on('cdqe:clear', () => {
     chrome.downloads.erase({ query: [''] }, results => {
       state.items.result = state.items.result.filter(id => {
         if (results.includes(id)) {
           delete state.items.entities[id]
           return false
         } else {
-          console.warn('cdme:error', `Unable to erase download #${id}`)
+          console.warn('cdqe:error', `Unable to erase download #${id}`)
           return true
         }
       })

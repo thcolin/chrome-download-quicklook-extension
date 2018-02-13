@@ -1,5 +1,5 @@
 {
-  "name": "chrome-download-manager-extension",
+  "name": "chrome-download-quicklook-extension",
   "version": "1.0.0",
   "description": "💾🔭 A beautiful Chrome extension to have a quicklook on your downloads !",
   "main": "src/index.js",

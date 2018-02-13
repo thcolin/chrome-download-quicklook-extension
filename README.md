@@ -1,4 +1,4 @@
-# Chrome Download Manager Extension
+# Chrome Download Quicklook Extension
 💾🔭 A beautiful `Chrome` extension to have a quicklook on your downloads !
 
 ## Options
@@ -10,11 +10,11 @@
 * rounded `estimatedEndTime`
 
 ## Next ?
+* [ ] implement `options` (modal ?)
 * [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ?
 * [ ] implement `delete` action on `card` ?
 * [ ] improve `npm run build` (copy `background.js` to `dist`) and fix `npm run dev` (mimic `npm run build`)
-* [x] rebrand with `Quicklook` in mind
 
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)

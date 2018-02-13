@@ -161,27 +161,27 @@ export default function card (id, state, emit) {
   `
 
   function stop () {
-    emit('cdme:stop', item.id)
+    emit('cdqe:stop', item.id)
   }
 
   function pause () {
-    emit('cdme:pause', item.id)
+    emit('cdqe:pause', item.id)
   }
 
   function resume () {
-    emit('cdme:resume', item.id)
+    emit('cdqe:resume', item.id)
   }
 
   function remove (e) {
-    emit('cdme:remove', item.id)
+    emit('cdqe:remove', item.id)
   }
 
   function show () {
-    emit('cdme:show', item.id)
+    emit('cdqe:show', item.id)
   }
 
   function open () {
-    emit('cdme:open', item.id)
+    emit('cdqe:open', item.id)
   }
 
   function dhumanize (milliseconds) {
