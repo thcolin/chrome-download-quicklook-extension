@@ -7,6 +7,7 @@ export default function list(state, emit) {
   const regex = new RegExp(state.input, 'gi')
   const results = state.items.result
     .filter(id => !state.input || state.items.entities[id].url.match(regex) || state.items.entities[id].filename.split('/').pop().match(regex))
+
   const styles = {
     list: css({
       width: '400px',

@@ -8,7 +8,8 @@ export default function placeholder(title) {
       flex: 1,
       flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      margin: '50px'
     }),
     illustration: css({
       height: '150px',
