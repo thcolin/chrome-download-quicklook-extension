@@ -117,6 +117,7 @@ export default function card (id, state, emit) {
   const actions = {
     stop: html`<button type="button" className=${styles.action} onclick=${stop}>stop</button>`,
     retry: html`<a href=${item.url} className=${styles.action} target="_blank" download>retry</a>`,
+    redo: html`<a href=${item.url} className=${styles.action} target="_blank" download>redo</a>`,
     pause: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${pause}>pause</button>`,
     resume: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${resume}>resume</button>`,
     show: html`<button type="button" className=${styles.action} onclick=${show}>show</button>`,
@@ -147,9 +148,10 @@ export default function card (id, state, emit) {
         <div class="actions">
           ${item.state === 'in_progress' ? (item.paused ? actions.resume : actions.pause) : null}
           ${item.state === 'in_progress' ? actions.stop : null}
-          ${item.state === 'interrupted' || (item.state === 'complete' && !item.exists) ? actions.retry : null}
+          ${item.state === 'interrupted' ? actions.retry : null}
           ${item.state === 'complete' && item.exists ? actions.show : null}
           ${item.state === 'complete' && item.exists ? actions.open : null}
+          ${item.state === 'complete' && !item.exists ? actions.redo : null}
         </div>
       </div>
       <button type="button" title="Remove" className=${styles.remove} onclick=${remove}>
