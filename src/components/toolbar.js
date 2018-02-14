@@ -52,15 +52,15 @@ export default function toolbar(state, emit) {
 
   return html`
     <div className=${styles.toolbar}>
-      <button type="button" title="Open Downloads" className=${styles.button} onclick=${full}>
+      <button type="button" title=${chrome.i18n.getMessage('toolbar_full')} className=${styles.button} onclick=${full}>
         <i class="material-icons">subject</i>
       </button>
       <div className=${styles.search}>
         <i className=${[styles.icon, styles.loupe, 'material-icons'].join(' ')}>search</i>
         <i className=${[styles.icon, styles.cancel, !state.input.length && styles.none, 'material-icons'].join(' ')} onclick=${cancel}>cancel</i>
-        <input type="text" className=${styles.input} value=${state.input} placeholder="Search downloads" oninput=${search}>
+        <input type="text" className=${styles.input} value=${state.input} oninput=${search} placeholder=${chrome.i18n.getMessage('toolbar_search')}>
       </div>
-      <button type="button" title="Clear All" className=${styles.button} onclick=${clear}>
+      <button type="button" title=${chrome.i18n.getMessage('toolbar_clear')} className=${styles.button} onclick=${clear}>
         <i class="material-icons">delete</i>
       </button>
     </div>

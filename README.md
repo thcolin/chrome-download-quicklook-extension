@@ -1,20 +1,27 @@
 # Chrome Download Quicklook Extension
 💾🔭 A beautiful `Chrome` extension to have a quicklook on your downloads !
 
-## Options
-* `hide-deleted` : Will hide download when item file is deleted on filesystem
-* `hide-only` : Doesn't delete download history, just hide item
+![Chrome Download Quicklook Extension - Screenshot](screenshot.png?raw=true)
 
-## Cool (but useless)
-* equalized `speed`
-* rounded `estimatedEndTime`
+## Features
+* dynamic `icon` with global progress : blue when active, grey when idle
+* open full download view : [chrome://downloads](chrome://downloads)
+* search through downloads
+* clear all downloads
+* download `card` with `speed`, `progress` and `estimated remaining time`
+* `remove` any download
+* `pause`, `resume` and `stop` ongoing download
+* `show`, `open` or redo completed download
+* `retry` interrupted download
 
-## Next ?
+## Next
+* [ ] implement `i18n:fr`
+* [ ] implement `item` icon (use `chrome.downloads.getFileIcon()`)
+  * try `callbag` ? (chain call `api`)
 * [ ] implement `options` (modal ?)
-* [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
-  * try `callbag` ?
+  * [ ] `hide-deleted` : Will hide download when item file is deleted on filesystem
+  * [ ] `hide-only` : Doesn't delete download history, just hide item
 * [ ] implement `delete` action on `card` ?
-* [x] improve `npm run build` (copy `background.js` to `dist`) and fix `npm run dev` (mimic `npm run build`)
 
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)

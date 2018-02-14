@@ -1,0 +1,86 @@
+{
+  "toolbar_full": {
+    "message": "Open Downloads",
+    "description": "Button title to open chrome full download view"
+  },
+  "toolbar_search": {
+    "message": "Search downloads",
+    "description": "Search input placeholder"
+  },
+  "toolbar_clear": {
+    "message": "Clear All",
+    "description": "Button title to clear all downloads"
+  },
+  "placeholder_nothing": {
+    "message": "Nothing to see here...",
+    "description": "Placeholder text displayed when no downloads at all"
+  },
+  "placeholder_empty": {
+    "message": "No search results found",
+    "description": "Placeholder text displayed when no search results"
+  },
+  "card_status_paused": {
+    "message": "paused",
+    "description": "Download paused status (will be capitalized)"
+  },
+  "card_status_ongoing": {
+    "message": "ongoing",
+    "description": "Download ongoing status (will be capitalized)"
+  },
+  "card_status_interrupted": {
+    "message": "interrupted",
+    "description": "Download interrupted status (will be capitalized)"
+  },
+  "card_status_complete": {
+    "message": "complete",
+    "description": "Download complete status"
+  },
+  "card_progress_preposition": {
+    "message": "of",
+    "description": "Used in progress value template : 26.37Mo [of] 1.2Go"
+  },
+  "card_actions_stop": {
+    "message": "stop",
+    "description": "Button text to stop an ongoing download (will be uppercased)"
+  },
+  "card_actions_retry": {
+    "message": "retry",
+    "description": "Button text to retry an interrupted ownload (will be uppercased)"
+  },
+  "card_actions_redo": {
+    "message": "redo",
+    "description": "Button text to redo a completed download (will be uppercased)"
+  },
+  "card_actions_pause": {
+    "message": "pause",
+    "description": "Button text to pause an ongoing download (will be uppercased)"
+  },
+  "card_actions_resume": {
+    "message": "resume",
+    "description": "Button text to resume a paused download (will be uppercased)"
+  },
+  "card_actions_show": {
+    "message": "show",
+    "description": "Button text to show (in sytem file explorer) a completed and existing download file (will be uppercased)"
+  },
+  "card_actions_open": {
+    "message": "open",
+    "description": "Button text to open a completed and existing download file (will be uppercased)"
+  },
+  "carde_time_days": {
+    "message": "days",
+    "description": "Text used for days on progress remaining time"
+  },
+  "carde_time_hours": {
+    "message": "hours",
+    "description": "Text used for hours on progress remaining time"
+  },
+  "carde_time_minutes": {
+    "message": "min",
+    "description": "Text used for minutes on progress remaining time"
+  },
+  "carde_time_seconds": {
+    "message": "s",
+    "description": "Text used for seconds on progress remaining time"
+  }
+}

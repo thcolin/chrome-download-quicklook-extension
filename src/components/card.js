@@ -4,6 +4,7 @@ const html = require('choo/html')
 export default function card (id, state, emit) {
   const item = state.items.entities[id]
   const name = String(item.filename || item.url || id).split('/').pop()
+  const status = item.state === 'in_progress' ? (item.paused ? 'paused' : 'ongoing') : item.state
 
   const styles = {
     card: css({
@@ -107,51 +108,58 @@ export default function card (id, state, emit) {
     })
   }
 
-  const details = {
+  const labels = {
+    days: chrome.i18n.getMessage('carde_time_days'),
+    hours: chrome.i18n.getMessage('carde_time_hours'),
+    minutes: chrome.i18n.getMessage('carde_time_minutes'),
+    seconds: chrome.i18n.getMessage('carde_time_seconds'),
+  }
+
+  const progress = {
     speed: html`<span>${bhumanize(item.speed, '/s')}</span>`,
-    progress: html`<span>${bhumanize(item.bytesReceived)} on ${bhumanize(item.totalBytes)}</span>`,
-    remaining: html`<span>${item.paused ? 'Paused' : dhumanize(item.estimatedRemainingTime)}</span>`,
+    value: html`<span>${bhumanize(item.bytesReceived)} ${' ' + chrome.i18n.getMessage('card_progress_preposition') + ' '} ${bhumanize(item.totalBytes)}</span>`,
+    remaining: html`<span>${dhumanize(item.estimatedRemainingTime, labels)}</span>`,
     bar: html`<div className=${styles.meter}><span className=${styles.bar}></span></div>`
   }
 
   const actions = {
-    stop: html`<button type="button" className=${styles.action} onclick=${stop}>stop</button>`,
-    retry: html`<a href=${item.url} className=${styles.action} target="_blank" download>retry</a>`,
-    redo: html`<a href=${item.url} className=${styles.action} target="_blank" download>redo</a>`,
-    pause: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${pause}>pause</button>`,
-    resume: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${resume}>resume</button>`,
-    show: html`<button type="button" className=${styles.action} onclick=${show}>show</button>`,
-    open: html`<button type="button" className=${styles.action} onclick=${open}>open</button>`
+    stop: html`<button type="button" className=${styles.action} onclick=${stop}>${chrome.i18n.getMessage('card_actions_stop')}</button>`,
+    retry: html`<a href=${item.url} className=${styles.action} target="_blank" download>${chrome.i18n.getMessage('card_actions_retry')}</a>`,
+    redo: html`<a href=${item.url} className=${styles.action} target="_blank" download>${chrome.i18n.getMessage('card_actions_redo')}</a>`,
+    pause: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${pause}>${chrome.i18n.getMessage('card_actions_pause')}</button>`,
+    resume: html`<button type="button" className=${[styles.action, styles.active].join(' ')} onclick=${resume}>${chrome.i18n.getMessage('card_actions_resume')}</button>`,
+    show: html`<button type="button" className=${styles.action} onclick=${show}>${chrome.i18n.getMessage('card_actions_show')}</button>`,
+    open: html`<button type="button" className=${styles.action} onclick=${open}>${chrome.i18n.getMessage('card_actions_open')}</button>`
   }
 
   return html`
-    <div className=${[styles.card, item.state === 'interrupted' && styles.interrupted].join(' ')} id=${id}>
+    <div className=${[styles.card, status === 'interrupted' && styles.interrupted].join(' ')} id=${id}>
       <div className=${styles.quicklook}>
-        <i className=${['material-icons', styles.ntm].join(' ')}>insert_drive_file</i>
+        <i className=${['material-icons'].join(' ')}>insert_drive_file</i>
       </div>
       <div className=${[styles.details, styles.textOverflow].join(' ')}>
         <div className=${styles.title}>
           <div className=${styles.textOverflow}>
-            <h3 title=${name} className=${[styles.name, item.state === 'in_progress' && !item.paused && styles.active].join(' ')}>${name}</h3>
+            <h3 title=${name} className=${[styles.name, status === 'ongoing' && styles.active].join(' ')}>${name}</h3>
           </div>
-          <span className=${styles.state}>${item.state}</span>
+          <span className=${styles.state}>${chrome.i18n.getMessage('card_status_' + status)}</span>
         </div>
         <a href=${item.url} title=${item.url} className=${styles.link} target="_blank" download>${item.url}</a>
         <div class=${styles.progress}>
-          ${item.state === 'in_progress' && !item.paused ? details.speed : null}
-          ${item.state === 'in_progress' && !item.paused ? ' - ' : null}
-          ${item.state === 'in_progress' ? details.progress : null}
-          ${item.state === 'in_progress' && !item.paused ? ', ' : null}
-          ${item.state === 'in_progress' && !item.paused ? details.remaining : null}
-          ${item.state === 'in_progress' ? details.bar : null}
+          ${status === 'ongoing' ? progress.speed : null}
+          ${status === 'ongoing' ? ' - ' : null}
+          ${['ongoing', 'paused'].includes(status) ? progress.value : null}
+          ${status === 'ongoing' ? ', ' : null}
+          ${status === 'ongoing' ? progress.remaining : null}
+          ${['ongoing', 'paused'].includes(status) ? progress.bar : null}
         </div>
         <div class="actions">
-          ${item.state === 'in_progress' ? (item.paused ? actions.resume : actions.pause) : null}
-          ${item.state === 'in_progress' ? actions.stop : null}
-          ${item.state === 'interrupted' ? actions.retry : null}
-          ${item.state === 'complete' && item.exists ? actions.show : null}
-          ${item.state === 'complete' && item.exists ? actions.open : null}
-          ${item.state === 'complete' && !item.exists ? actions.redo : null}
+          ${['ongoing', 'paused'].includes(status) ? (item.paused ? actions.resume : actions.pause) : null}
+          ${['ongoing', 'paused'].includes(status) ? actions.stop : null}
+          ${status === 'interrupted' ? actions.retry : null}
+          ${status === 'complete' && item.exists ? actions.show : null}
+          ${status === 'complete' && item.exists ? actions.open : null}
+          ${status === 'complete' && !item.exists ? actions.redo : null}
         </div>
       </div>
       <button type="button" title="Remove" className=${styles.remove} onclick=${remove}>
@@ -184,7 +192,7 @@ export default function card (id, state, emit) {
     emit('cdqe:open', item.id)
   }
 
-  function dhumanize (milliseconds) {
+  function dhumanize (milliseconds, labels = { days: 'days', hours: 'hours', minutes: 'min', seconds: 's' }) {
     // humanize duration
     let days, hours, minutes, seconds
     seconds = Math.floor(milliseconds / 1000)
@@ -200,13 +208,13 @@ export default function card (id, state, emit) {
       .map(key => {
         switch (key) {
           case 'days':
-            return !days ? null : [days, 'days'].join(' ')
+            return !days ? null : [days, labels.days].join(' ')
           case 'hours':
-            return days || !hours ? null : [hours, 'hours'].join(' ')
+            return days || !hours ? null : [hours, labels.hours].join(' ')
           case 'minutes':
-            return days || hours || !minutes ? null : [minutes, 'min'].join(' ')
+            return days || hours || !minutes ? null : [minutes, labels.minutes].join(' ')
           case 'seconds':
-            return days || hours || minutes ? null : [seconds, 's'].join(' ')
+            return days || hours || minutes ? null : [seconds, labels.seconds].join(' ')
         }
       })
       .filter(value => value)

@@ -24,7 +24,7 @@ export default function list(state, emit) {
   return html`
     <div className=${styles.list}>
       <div className=${styles.container}>
-        ${results.length ? results.map(id => card(id, state, emit)) : placeholder(state.input ? 'No search results found' : 'Nothing to see here...')}
+        ${results.length ? results.map(id => card(id, state, emit)) : placeholder(chrome.i18n.getMessage(state.input ? 'placeholder_empty' : 'placeholder_nothing'))}
       </div>
     </div>
   `
