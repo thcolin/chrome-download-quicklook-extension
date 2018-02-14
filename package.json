@@ -4,8 +4,8 @@
   "description": "💾🔭 A beautiful Chrome extension to have a quicklook on your downloads !",
   "main": "src/index.js",
   "scripts": {
-    "dev": "NODE_PATH=src npx watchify src/index.js -o dist/index.js -t [ babelify --presets [ env ] ] -g yo-yoify",
-    "build": "cp -R node_modules/material-design-icons/iconfont dist/material-icons",
+    "dev": "npx concurrently -r \"cp -R node_modules/material-design-icons/iconfont dist/material-icons\" \"NODE_PATH=src npx watchify src/index.js -o dist/index.js -t [ babelify --presets [ env ] ] -g yo-yoify\" \"npx watchify src/background.js -o dist/background.js -t [ babelify --presets [ env ] ] -g yo-yoify\"",
+    "build": "npx concurrently -r \"cp -R node_modules/material-design-icons/iconfont dist/material-icons\" \"NODE_PATH=src npx browserify src/index.js -o dist/index.js -t [ babelify --presets [ env ] ] -g yo-yoify -g uglifyify\" \"npx browserify src/background.js -o dist/background.js -t [ babelify --presets [ env ] ] -g yo-yoify -g uglifyify\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "thcolin",
@@ -20,6 +20,8 @@
     "babel-preset-env": "^1.6.1",
     "babelify": "^8.0.0",
     "choo-devtools": "^2.3.3",
+    "concurrently": "^3.5.1",
+    "uglifyify": "^4.0.5",
     "watchify": "^3.10.0",
     "yo-yoify": "^4.3.0"
   }

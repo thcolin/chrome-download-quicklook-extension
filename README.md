@@ -14,7 +14,7 @@
 * [ ] implement `quicklook` with `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ?
 * [ ] implement `delete` action on `card` ?
-* [ ] improve `npm run build` (copy `background.js` to `dist`) and fix `npm run dev` (mimic `npm run build`)
+* [x] improve `npm run build` (copy `background.js` to `dist`) and fix `npm run dev` (mimic `npm run build`)
 
 ## Thanks
 * [choojs/choo](https://github.com/choojs/choo)
