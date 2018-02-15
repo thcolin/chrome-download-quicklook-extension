@@ -16,8 +16,6 @@
 
 ## Next
 * [ ] implement `i18n:fr`
-* [x] implement `item` icon (use `chrome.downloads.getFileIcon()`)
-  * try `callbag` ? (chain call `api`)
 * [ ] implement `options` (modal ?)
   * [ ] `hide-deleted` : Will hide download when item file is deleted on filesystem
   * [ ] `hide-only` : Doesn't delete download history, just hide item
