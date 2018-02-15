@@ -22,7 +22,7 @@ export default function card (id, state, emit) {
       whiteSpace: 'nowrap',
       overflow: 'hidden'
     }),
-    quicklook: css({
+    icon: css({
       display: 'flex',
       alignItems: 'center',
       alignSelf: 'stretch',
@@ -87,7 +87,7 @@ export default function card (id, state, emit) {
       outline: 'none',
       cursor: 'pointer'
     }),
-    icon: css({
+    dynamic: css({
       color: 'hsl(0, 0%, 40%)',
       fontSize: '18px',
       ':hover': {
@@ -115,9 +115,14 @@ export default function card (id, state, emit) {
     seconds: chrome.i18n.getMessage('carde_time_seconds'),
   }
 
+  const icons = {
+    system: html`<img src=${item.icon} />`,
+    default: html`<i className="material-icons">insert_drive_file</i>`
+  }
+
   const progress = {
     speed: html`<span>${bhumanize(item.speed, '/s')}</span>`,
-    value: html`<span>${bhumanize(item.bytesReceived)} ${' ' + chrome.i18n.getMessage('card_progress_preposition') + ' '} ${bhumanize(item.totalBytes)}</span>`,
+    value: html`<span>${bhumanize(item.bytesReceived)} ${[' ', chrome.i18n.getMessage('card_progress_preposition'), ' '].join('')} ${bhumanize(item.totalBytes)}</span>`,
     remaining: html`<span>${dhumanize(item.estimatedRemainingTime, labels)}</span>`,
     bar: html`<div className=${styles.meter}><span className=${styles.bar}></span></div>`
   }
@@ -134,8 +139,8 @@ export default function card (id, state, emit) {
 
   return html`
     <div className=${[styles.card, status === 'interrupted' && styles.interrupted].join(' ')} id=${id}>
-      <div className=${styles.quicklook}>
-        <i className=${['material-icons'].join(' ')}>insert_drive_file</i>
+      <div className=${styles.icon}>
+        ${item.icon ? icons.system : icons.default}
       </div>
       <div className=${[styles.details, styles.textOverflow].join(' ')}>
         <div className=${styles.title}>
@@ -163,7 +168,7 @@ export default function card (id, state, emit) {
         </div>
       </div>
       <button type="button" title="Remove" className=${styles.remove} onclick=${remove}>
-        <i className=${['material-icons', styles.icon].join(' ')}>clear</i>
+        <i className=${['material-icons', styles.dynamic].join(' ')}>clear</i>
       </button>
     </div>
   `

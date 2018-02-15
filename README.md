@@ -5,7 +5,7 @@
 
 ## Features
 * dynamic `icon` with global progress : blue when active, grey when idle
-* open full download view : [chrome://downloads](chrome://downloads)
+* open full download view : `chrome://downloads`
 * search through downloads
 * clear all downloads
 * download `card` with `speed`, `progress` and `estimated remaining time`
@@ -16,7 +16,7 @@
 
 ## Next
 * [ ] implement `i18n:fr`
-* [ ] implement `item` icon (use `chrome.downloads.getFileIcon()`)
+* [x] implement `item` icon (use `chrome.downloads.getFileIcon()`)
   * try `callbag` ? (chain call `api`)
 * [ ] implement `options` (modal ?)
   * [ ] `hide-deleted` : Will hide download when item file is deleted on filesystem

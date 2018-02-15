@@ -28,8 +28,9 @@ export default function store (state, emitter) {
   }
 
   emitter.on('cdqe:bootstrap', items => {
-    state.items.entities = items.map(embellish).reduce((obj, item) => Object.assign(obj, { [item.id]: item }), {})
+    state.items.entities = items.map(decorate).reduce((obj, item) => Object.assign(obj, { [item.id]: item }), {})
     state.items.result = [].concat(items.map(items => items.id))
+    items.forEach(item => emitter.emit('cdqe:dress', item.id))
     emitter.emit('render')
   })
 
@@ -39,8 +40,9 @@ export default function store (state, emitter) {
   })
 
   emitter.on('cdqe:add', item => {
-    state.items.entities[item.id] = embellish(item)
+    state.items.entities[item.id] = decorate(item)
     state.items.result = [item.id].concat(state.items.result)
+    emitter.emit('cdqe:dress', item.id)
     emitter.emit('render')
   })
 
@@ -56,6 +58,16 @@ export default function store (state, emitter) {
           }
         }), { id: item.id })
       ))
+  })
+
+  emitter.on('cdqe:dress', id => {
+    chrome.downloads.getFileIcon(id, { size: 32 }, icon => emitter.emit('cdqe:alter', {
+      id: id,
+      icon: {
+        previous: null,
+        current: icon
+      }
+    }))
   })
 
   emitter.on('cdqe:alter', deltas => {
@@ -124,7 +136,7 @@ export default function store (state, emitter) {
   })
 }
 
-function embellish (item) {
+function decorate (item) {
   return Object.assign(item, {
     records: item.records ? item.records : []
   })
