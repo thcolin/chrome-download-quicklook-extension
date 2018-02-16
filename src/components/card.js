@@ -26,6 +26,8 @@ export default function card (id, state, emit) {
       display: 'flex',
       alignItems: 'center',
       alignSelf: 'stretch',
+      height: '32px',
+      width: '32px',
       padding: '20px',
       borderRight: '1px solid hsl(0, 0%, 90%)'
     }),
