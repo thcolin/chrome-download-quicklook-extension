@@ -26,6 +26,8 @@ export default function card (id, state, emit) {
       display: 'flex',
       alignItems: 'center',
       alignSelf: 'stretch',
+      width: '32px',
+      justifyContent: 'center',
       padding: '20px',
       borderRight: '1px solid hsl(0, 0%, 90%)'
     }),
@@ -228,7 +230,7 @@ export default function card (id, state, emit) {
 
   function bhumanize (bytes, suffix = '') {
     // humanize bytes
-    let e = (Math.log(bytes) / Math.log(1e3)) | 0;
+    let e = (Math.log(bytes) / Math.log(1e3)) | 0
     return `${+((bytes || 0) / Math.pow(1e3, e)).toFixed(2)} ${'kMGTPEZY'[e - 1] || ''}o` + suffix
   }
 }
