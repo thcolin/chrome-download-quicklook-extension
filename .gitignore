@@ -1,3 +1,5 @@
+.DS_Store
+*.priv
+*.crx
 node_modules
 dist
-src/sample.json

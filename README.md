@@ -14,6 +14,10 @@
 * `show`, `open` or redo completed download
 * `retry` interrupted download
 
+## Install
+* download [latest release](https://github.com/thcolin/chrome-download-quicklook-extension/releases)
+* drag & drop `chrome-download-quicklook-extension.crx` to `chrome://extensions`
+
 ## Next
 * [ ] implement `i18n:fr`
 * [ ] implement `options` (modal ?)
