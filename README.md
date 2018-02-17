@@ -17,6 +17,7 @@
 ## Install
 * download [latest release](https://github.com/thcolin/chrome-download-quicklook-extension/releases)
 * drag & drop `chrome-download-quicklook-extension.crx` to `chrome://extensions`
+* same process for `update`, you don't need to uninstall extension before dropping new version
 
 ## Next
 * [ ] implement `i18n:fr`
