@@ -3,7 +3,7 @@
 
   "name": "Chrome Download Quicklook Extension",
   "description": "💾🔭 A beautiful extension to have a quicklook on your downloads !",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "default_locale": "en",
   "icons": {
     "128": "icon-brand.png"
