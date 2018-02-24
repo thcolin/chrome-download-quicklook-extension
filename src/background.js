@@ -3,6 +3,8 @@ chrome.downloads.setShelfEnabled(false)
 chrome.runtime.onInstalled.addListener(() => chrome.downloads.setShelfEnabled(false))
 chrome.runtime.onStartup.addListener(() => chrome.downloads.setShelfEnabled(false))
 
+chrome.downloads.onCreated.addListener(item => refresh())
+
 chrome.runtime.onMessage.addListener(request => {
   switch (request.action) {
     case 'draw':
@@ -11,11 +13,14 @@ chrome.runtime.onMessage.addListener(request => {
   }
 })
 
+let tid = -1
 let progress
 
 refresh()
 
 function refresh () {
+  tid = -1
+
   chrome.downloads.search({
     state: 'in_progress',
     limit: 0
@@ -29,7 +34,9 @@ function refresh () {
       draw(progress)
     }
 
-    setTimeout(refresh, 200)
+    if (items.length && tid < 0) {
+      tid = setTimeout(refresh, 200)
+    }
   })
 }
 
